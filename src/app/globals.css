@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+/*
+ * ANBEAN tasarım tokenları — çift modlu aksan sistemi
+ *
+ *   Gönder (kurye / teslimat)  → mercan  #FF5C35  sıcak, aciliyet, eylem
+ *   Sür    (mikro-mobilite)    → turkuaz #00D5C8  elektrik, temiz enerji
+ *
+ * Aksan, kök sarmalayıcıdaki data-mode özniteliğiyle değişir. Renkler
+ * @property ile <color> olarak kayıtlı olduğundan tarayıcı geçiş boyunca
+ * ara renkleri kendisi hesaplar: JS yok, hidrasyondan önce bile çalışır.
+ * Desteklemeyen tarayıcıda renk anında değişir (zarif gerileme).
+ *
+ * Bilinçli olarak KULLANILMAYAN tonlar (ölçüm: ton farkı):
+ *   mor   ~255° → Getir'in tescilli rengi #5D3EBC; bizde ayrıca "iade" durumu
+ *   sarı  ~50°  → Getir'in ikinci rengi
+ *   yeşil ~105° → Martı #34D100
+ * Aksan üstünde metin her iki modda koyu (#0B1220): beyaz metin mercanda
+ * 3.07:1, turkuazda 1.85:1 ile AA'yı geçmiyor; koyu metin 6.09 ve 10.12.
+ */
+
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ff5c35;
+}
+@property --accent-soft {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ff8363;
+}
+@property --accent-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffb199;
+}
+@property --accent-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c2410c;
+}
+
+:root {
+  color-scheme: dark;
+  /* Fontsource değişken fontları (layout.tsx'te import edilir) */
+  --font-sora: "Sora Variable";
+  --font-body: "Plus Jakarta Sans Variable";
+  /* Sabit mod renkleri — "bu kart Sür'e ait" gibi bağlamlar için */
+  --gonder: #ff5c35;
+  --gonder-soft: #ff8363;
+  --gonder-ink: #c2410c; /* açık zeminde metin: 5.18:1 */
+  --sur: #00d5c8;
+  --sur-soft: #5cf0e6;
+  --sur-ink: #0f766e; /* açık zeminde metin: 5.47:1 */
+  /* Aktif mod aksanı */
+  --accent: #ff5c35;
+  --accent-soft: #ff8363;
+  --accent-2: #ffb199;
+  --accent-ink: #c2410c;
+}
+
+[data-mode="gonder"] {
+  --accent: #ff5c35;
+  --accent-soft: #ff8363;
+  --accent-2: #ffb199;
+  --accent-ink: #c2410c;
+}
+
+[data-mode="sur"] {
+  --accent: #00d5c8;
+  --accent-soft: #5cf0e6;
+  --accent-2: #7cf5ee;
+  --accent-ink: #0f766e;
+}
+
+[data-mode] {
+  transition:
+    --accent 550ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent-soft 550ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent-2 550ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent-ink 550ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@theme {
+  --color-deep: #0b1220;
+  --color-deep-2: #111b2e;
+  --color-panel: #f7f8fa;
+  --color-st-delivered: #16a34a;
+  --color-st-waiting: #f59e0b;
+  --color-st-risk: #dc2626;
+  --color-st-transit: #2563eb;
+  --color-st-return: #7c3aed;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * inline: utility'ler doğrudan var(--accent) okur. Böylece data-mode değişince
+ * her eleman yeni değeri — geçiş sırasında da ara değerleri — görür.
+ * (inline olmasaydı değer :root'ta bir kez hesaplanıp mod değişimini görmezdi.)
+ */
+@theme inline {
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-2: var(--accent-2);
+  --color-accent-ink: var(--accent-ink);
+  --color-gonder: var(--gonder);
+  --color-gonder-soft: var(--gonder-soft);
+  --color-gonder-ink: var(--gonder-ink);
+  --color-sur: var(--sur);
+  --color-sur-soft: var(--sur-soft);
+  --color-sur-ink: var(--sur-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Hero ışıması — aksanla birlikte akar */
+.hero-glow {
+  background:
+    radial-gradient(900px 480px at 12% 8%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 62%),
+    radial-gradient(720px 420px at 88% 22%, color-mix(in oklab, var(--accent-2) 14%, transparent), transparent 60%);
+}
+
+/* Hero arkasındaki rota ızgarası */
+.route-lines {
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--accent) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 85% 70% at 50% 35%, #000 35%, transparent 100%);
+}
+
+@keyframes route-dash {
+  to {
+    stroke-dashoffset: -480;
+  }
+}
+.route-dash {
+  stroke-dasharray: 10 14;
+  animation: route-dash 14s linear infinite;
+}
+
+/* Rota geçişi — opaklık 0.4'ten başlar: LCP öğesi ilk karede görünür */
+@keyframes page-enter {
+  from {
+    opacity: 0.4;
+    transform: translateY(6px);
+  }
+}
+.page-enter {
+  animation: page-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Canlı göstergesi */
+@keyframes live-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 65%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: live-ring 1.6s ease-out infinite;
+}
+
+/* Takip haritası: kurye nabzı ve rota çizimi */
+@keyframes pin-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.pin-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pin-pulse 1.8s ease-out infinite;
+}
+
+@keyframes route-draw {
+  from {
+    stroke-dashoffset: 600;
+  }
+}
+.route-draw {
+  animation: route-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.input-dark {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  color: #e2e8f0;
+  width: 100%;
+  outline: none;
+}
+.input-dark:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.input-light {
+  background: #fff;
+  border: 1px solid #d8dce4;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  color: #0b1220;
+  width: 100%;
+  outline: none;
+}
+.input-light:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+}
+.input-dark:focus-visible,
+.input-light:focus-visible {
+  outline: none;
+}
+
+/* "Hareketi azalt": tüm CSS animasyon ve geçişleri anlık, nabızlar gizli */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pin-pulse {
+    display: none;
+  }
+}
